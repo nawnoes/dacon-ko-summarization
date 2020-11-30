@@ -46,11 +46,11 @@ def token_num(data_path = 'data/train.jsonl'):
   count = 0
   for json_str in json_list:
       json_data = json.loads(json_str)
-      tmp_str =''
-      for arti_str in json_data['article_original']:
-        tmp_str += arti_str
-      bert_tok_num = max(bert_tok_num, len(bert_tok.encode(tmp_str)))
-      gpt_tok_num = max(gpt_tok_num, len(gpt_tok.encode(tmp_str)))
+      tmp_str = json_data['abstractive']
+      # for arti_str in json_data['article_original']:
+      #   tmp_str += arti_str
+      bert_tok_num = max(bert_tok_num, len(bert_tok.encode(tmp_str,max_length=512, truncation=True)))
+      gpt_tok_num = max(gpt_tok_num, len(gpt_tok.encode(tmp_str, max_length=512, truncation=True)))
 
       # print(len(json_data['article_original']))
       # sum_len += len(json_data['article_original'])

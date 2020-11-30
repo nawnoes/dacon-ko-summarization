@@ -27,5 +27,6 @@ jsonl 파일은 Json Line 형식의 파일로, 한줄에 json 객체 하나로 �
 xxxx_test_v2.json의 추론결과를 csv 파일로 출
 
 ## 생성요약 (Abstrative)
-
+KoGPT2의 max_len = 1024
 ## 추출요약 (Extrative)
+KoBERT의 max_len = 512

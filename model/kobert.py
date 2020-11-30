@@ -26,7 +26,7 @@ predefined_args = {
 
 class KoBERTforSequenceClassfication(BertPreTrainedModel):
   def __init__(self,
-                num_labels = 359,
+                num_labels = 2,
                 hidden_size = 768,
                 hidden_dropout_prob = 0.1,
                ):

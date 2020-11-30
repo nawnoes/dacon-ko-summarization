@@ -1,19 +1,16 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
-
+from util import jsonl_load
 from kogpt2_transformers import get_kogpt2_tokenizer
 from kobert_transformers import get_tokenizer
 
 class AbstrativeDataset(Dataset):
   def __init__(self,
-               file_path = "../data/wellness_dialog_for_autoregressive.txt",
                n_ctx = 1024
                ):
-    self.file_path = file_path
     self.data =[]
     self.tokenizer = get_kogpt2_tokenizer()
-
 
     bos_token_id = [self.tokenizer.bos_token_id]
     eos_token_id = [self.tokenizer.eos_token_id]
@@ -44,25 +41,23 @@ class AbstrativeDataset(Dataset):
 
 class ExtractiveDataset(Dataset):
   def __init__(self,
-               file_path = "../data/wellness_dialog_for_text_classification.txt",
                num_label = 359,
                device = 'cpu',
                max_seq_len = 512, # KoBERT max_length
                tokenizer = None
                ):
-    self.file_path = file_path
     self.device = device
     self.data =[]
     self.tokenizer = tokenizer if tokenizer is not None else get_tokenizer()
 
+    jsonl_datas = jsonl_load
+    for dict_data in jsonl_datas:
+      origin_article = dict_data['article_original']
 
-    file = open(self.file_path, 'r', encoding='utf-8')
+      for idx in range(len(origin_article)):
+        index_of_words = tokenizer.encode(origin_article[idx])
 
-    while True:
-      line = file.readline()
-      if not line:
-        break
-      datas = line.split("    ")
+
       index_of_words = tokenizer.encode(datas[0])
       token_type_ids = [0] * len(index_of_words)
       attention_mask = [1] * len(index_of_words)
