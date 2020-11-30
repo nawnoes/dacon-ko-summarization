@@ -11,7 +11,12 @@ jsonl 파일은 Json Line 형식의 파일로, 한줄에 json 객체 하나로 �
 ###### train.jsonl
 - media : 기사 미디어
 - id : 각 데이터 고유 번호
-- article_original : 전체 기사 내용, 문장별로 split되어 있음
+- article_original : 전체 기사 내용, 문장별로 split. 
+    + 최대 길이는 97
+    + 평균 길이는 13
+    + 최대 토큰 길이
+        * kobert tokenizer max length: 1250
+        * kogpt tokenizer max length: 1029  
 - abstractive : 사람이 생성한 요약문
 - extractive : 사람이 추출한 요약문 3개의 index
 #### 테스트 데이터
