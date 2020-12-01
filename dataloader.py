@@ -41,48 +41,79 @@ class AbstrativeDataset(Dataset):
 
 class ExtractiveDataset(Dataset):
   def __init__(self,
-               num_label = 359,
+               num_label = 2, # 추출할것과 추출하지 않을 것들로
                device = 'cpu',
                max_seq_len = 512, # KoBERT max_length
-               tokenizer = None
                ):
     self.device = device
     self.data =[]
-    self.tokenizer = tokenizer if tokenizer is not None else get_tokenizer()
+    self.tokenizer = get_tokenizer()
+
+    cls_token_id = self.tokenizer.cls_token_id # [CLS]
+    sep_token_id = self.tokenizer.sep_token_id # [SEP]
+    pad_token_id = self.tokenizer.pad_token_id # [PAD]
 
     jsonl_datas = jsonl_load
     for dict_data in jsonl_datas:
-      origin_article = dict_data['article_original']
+      articles = dict_data['article_original']
+      extractive_indices = dict_data['extractive']
 
-      for idx in range(len(origin_article)):
-        index_of_words = tokenizer.encode(origin_article[idx])
+      index_of_words = None
+      token_type_ids = None
+      label= None
+      token_num = None
 
+      token_type_state = False
 
-      index_of_words = tokenizer.encode(datas[0])
-      token_type_ids = [0] * len(index_of_words)
-      attention_mask = [1] * len(index_of_words)
+      for idx in range(len(articles)):
+        label_state = True if idx in extractive_indices else False
 
-      # Padding Length
-      padding_length = max_seq_len - len(index_of_words)
+        if idx == 0: # 맨 처음 문장인 경우
+          index_of_words = [cls_token_id]
+          token_type_ids = [int(token_type_state)]
+          label = [int(label_state)]
+          token_num = 1
 
-      # Zero Padding
-      index_of_words += [0] * padding_length
-      token_type_ids += [0] * padding_length
-      attention_mask += [0] * padding_length
+        article = articles[idx]
+        tmp_index = tokenizer.encode(article, add_special_tokens=False)
+        num_tmp_index = len(tmp_index) + 1
 
-      # Label
-      label = int(datas[1][:-1])
+        if token_num +  num_tmp_index <= max_seq_len:
+          index_of_words += tmp_index + [sep_token_id]
+          token_type_ids += [int(token_type_state)] * num_tmp_index
 
-      data = {
-              'input_ids': torch.tensor(index_of_words).to(self.device),
-              'token_type_ids': torch.tensor(token_type_ids).to(self.device),
-              'attention_mask': torch.tensor(attention_mask).to(self.device),
-              'labels': torch.tensor(label).to(self.device)
-             }
+          label += [int(label_state)] * num_tmp_index
+          token_num += num_tmp_index
+        else:
+          # attention mask
+          attention_mask = [1] * token_num
 
-      self.data.append(data)
+          # Padding Length
+          padding_length = max_seq_len - token_num
 
-    file.close()
+          # Pad Token Padding
+          index_of_words += [pad_token_id] * padding_length
+          token_type_ids += [pad_token_id] * padding_length
+          attention_mask += [pad_token_id] * padding_length
+
+          # Label Zero Padding
+          label += [0] * padding_length
+
+          # Data Append
+          data = {
+                  'input_ids': torch.tensor(index_of_words).to(self.device),
+                  'token_type_ids': torch.tensor(token_type_ids).to(self.device),
+                  'attention_mask': torch.tensor(attention_mask).to(self.device),
+                  'label': torch.tensor(label).to(self.device)
+                 }
+          self.data.append(data)
+
+          # Data Initialization
+          index_of_words = [cls_token_id]
+          token_type_ids = [int(token_type_state)]
+          label = [int(label_state)]
+          token_num = 1
+          token_type_state = not token_type_state
 
   def __len__(self):
     return len(self.data)
