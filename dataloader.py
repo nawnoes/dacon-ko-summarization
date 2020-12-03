@@ -1,4 +1,5 @@
 import torch
+from tqdm import tqdm
 import torch.nn as nn
 from torch.utils.data import Dataset
 from util import jsonl_load
@@ -53,8 +54,9 @@ class ExtractiveDataset(Dataset):
     sep_token_id = self.tokenizer.sep_token_id # [SEP]
     pad_token_id = self.tokenizer.pad_token_id # [PAD]
 
-    jsonl_datas = jsonl_load
-    for dict_data in jsonl_datas:
+    jsonl_datas = jsonl_load()
+    # for dict_data in jsonl_datas:
+    for dict_data in tqdm(jsonl_datas):
       articles = dict_data['article_original']
       extractive_indices = dict_data['extractive']
 
@@ -75,7 +77,7 @@ class ExtractiveDataset(Dataset):
           token_num = 1
 
         article = articles[idx]
-        tmp_index = tokenizer.encode(article, add_special_tokens=False)
+        tmp_index = self.tokenizer.encode(article, add_special_tokens=False)
         num_tmp_index = len(tmp_index) + 1
 
         if token_num +  num_tmp_index <= max_seq_len:
@@ -84,6 +86,7 @@ class ExtractiveDataset(Dataset):
 
           label += [int(label_state)] * num_tmp_index
           token_num += num_tmp_index
+          token_type_state = not token_type_state
         else:
           # attention mask
           attention_mask = [1] * token_num
@@ -113,7 +116,29 @@ class ExtractiveDataset(Dataset):
           token_type_ids = [int(token_type_state)]
           label = [int(label_state)]
           token_num = 1
-          token_type_state = not token_type_state
+          token_type_state = False
+      # # attention mask
+      # attention_mask = [1] * token_num
+      #
+      # # Padding Length
+      # padding_length = max_seq_len - token_num
+      #
+      # # Pad Token Padding
+      # index_of_words += [pad_token_id] * padding_length
+      # token_type_ids += [pad_token_id] * padding_length
+      # attention_mask += [pad_token_id] * padding_length
+      #
+      # # Label Zero Padding
+      # label += [0] * padding_length
+      #
+      # # Data Append
+      # data = {
+      #   'input_ids': torch.tensor(index_of_words).to(self.device),
+      #   'token_type_ids': torch.tensor(token_type_ids).to(self.device),
+      #   'attention_mask': torch.tensor(attention_mask).to(self.device),
+      #   'label': torch.tensor(label).to(self.device)
+      # }
+      # self.data.append(data)
 
   def __len__(self):
     return len(self.data)
@@ -122,7 +147,7 @@ class ExtractiveDataset(Dataset):
     return item
 
 if __name__ == "__main__":
-  dataset = AbstrativeDataset()
+  # dataset = AbstrativeDataset()
   dataset2 = ExtractiveDataset()
-  print(dataset)
+  # print(dataset)
   print(dataset2)
