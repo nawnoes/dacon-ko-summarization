@@ -87,58 +87,39 @@ class ExtractiveDataset(Dataset):
           label += [int(label_state)] * num_tmp_index
           token_num += num_tmp_index
           token_type_state = not token_type_state
-        else:
-          # attention mask
-          attention_mask = [1] * token_num
 
-          # Padding Length
-          padding_length = max_seq_len - token_num
+          continue
 
-          # Pad Token Padding
-          index_of_words += [pad_token_id] * padding_length
-          token_type_ids += [pad_token_id] * padding_length
-          attention_mask += [pad_token_id] * padding_length
+        # attention mask
+        attention_mask = [1] * token_num
 
-          # Label Zero Padding
-          label += [0] * padding_length
+        # Padding Length
+        padding_length = max_seq_len - token_num
 
-          # Data Append
-          data = {
-                  'input_ids': torch.tensor(index_of_words).to(self.device),
-                  'token_type_ids': torch.tensor(token_type_ids).to(self.device),
-                  'attention_mask': torch.tensor(attention_mask).to(self.device),
-                  'label': torch.tensor(label).to(self.device)
-                 }
-          self.data.append(data)
+        # Pad Token Padding
+        index_of_words += [pad_token_id] * padding_length
+        token_type_ids += [pad_token_id] * padding_length
+        attention_mask += [pad_token_id] * padding_length
 
-          # Data Initialization
-          index_of_words = [cls_token_id]
-          token_type_ids = [int(token_type_state)]
-          label = [int(label_state)]
-          token_num = 1
-          token_type_state = False
-      # # attention mask
-      # attention_mask = [1] * token_num
-      #
-      # # Padding Length
-      # padding_length = max_seq_len - token_num
-      #
-      # # Pad Token Padding
-      # index_of_words += [pad_token_id] * padding_length
-      # token_type_ids += [pad_token_id] * padding_length
-      # attention_mask += [pad_token_id] * padding_length
-      #
-      # # Label Zero Padding
-      # label += [0] * padding_length
-      #
-      # # Data Append
-      # data = {
-      #   'input_ids': torch.tensor(index_of_words).to(self.device),
-      #   'token_type_ids': torch.tensor(token_type_ids).to(self.device),
-      #   'attention_mask': torch.tensor(attention_mask).to(self.device),
-      #   'label': torch.tensor(label).to(self.device)
-      # }
-      # self.data.append(data)
+        # Label Zero Padding
+        label += [0] * padding_length
+
+        # Data Append
+        data = {
+                'input_ids': torch.tensor(index_of_words).to(self.device),
+                'token_type_ids': torch.tensor(token_type_ids).to(self.device),
+                'attention_mask': torch.tensor(attention_mask).to(self.device),
+                'label': torch.tensor(label).to(self.device)
+               }
+        self.data.append(data)
+
+        # Data Initialization
+        index_of_words = [cls_token_id]
+        token_type_ids = [int(token_type_state)]
+        label = [int(label_state)]
+        token_num = 1
+        token_type_state = False
+
 
   def __len__(self):
     return len(self.data)
