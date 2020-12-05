@@ -88,37 +88,36 @@ class ExtractiveDataset(Dataset):
           token_num += num_tmp_index
           token_type_state = not token_type_state
 
-          continue
+        if token_num +  num_tmp_index > max_seq_len or idx == len(articles)-1 :
+          # attention mask
+          attention_mask = [1] * token_num
 
-        # attention mask
-        attention_mask = [1] * token_num
+          # Padding Length
+          padding_length = max_seq_len - token_num
 
-        # Padding Length
-        padding_length = max_seq_len - token_num
+          # Padding
+          index_of_words += [pad_token_id] * padding_length # [PAD] padding
+          token_type_ids += [token_type_state] * padding_length # last token_type_state padding
+          attention_mask += [0] * padding_length # zero padding
 
-        # Pad Token Padding
-        index_of_words += [pad_token_id] * padding_length
-        token_type_ids += [pad_token_id] * padding_length
-        attention_mask += [pad_token_id] * padding_length
+          # Label Zero Padding
+          label += [0] * padding_length
 
-        # Label Zero Padding
-        label += [0] * padding_length
+          # Data Append
+          data = {
+                  'input_ids': torch.tensor(index_of_words).to(self.device),
+                  'token_type_ids': torch.tensor(token_type_ids).to(self.device),
+                  'attention_mask': torch.tensor(attention_mask).to(self.device),
+                  'label': torch.tensor(label).to(self.device)
+                 }
+          self.data.append(data)
 
-        # Data Append
-        data = {
-                'input_ids': torch.tensor(index_of_words).to(self.device),
-                'token_type_ids': torch.tensor(token_type_ids).to(self.device),
-                'attention_mask': torch.tensor(attention_mask).to(self.device),
-                'label': torch.tensor(label).to(self.device)
-               }
-        self.data.append(data)
-
-        # Data Initialization
-        index_of_words = [cls_token_id]
-        token_type_ids = [int(token_type_state)]
-        label = [int(label_state)]
-        token_num = 1
-        token_type_state = False
+          # Data Initialization
+          index_of_words = [cls_token_id]
+          token_type_ids = [int(token_type_state)]
+          label = [int(label_state)]
+          token_num = 1
+          token_type_state = False
 
 
   def __len__(self):

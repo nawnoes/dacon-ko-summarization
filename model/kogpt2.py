@@ -4,7 +4,7 @@ from kogpt2_transformers import get_kogpt2_model
 
 class AbstractiveKoGPT2(nn.Module):
   def __init__(self):
-    super(AbstractiveGPT2, self).__init__()
+    super(AbstractiveKoGPT2, self).__init__()
     self.kogpt2 = get_kogpt2_model()
 
   def generate(self,

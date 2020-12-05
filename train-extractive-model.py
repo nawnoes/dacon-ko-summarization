@@ -8,8 +8,8 @@ from tqdm import tqdm
 import torch
 from transformers import AdamW
 from torch.utils.data import dataloader
-from dataloader.wellness import WellnessTextClassificationDataset
-from model.kobert import KoBERTforSequenceClassfication
+from dataloader import ExtractiveDataset
+from model.kobert import KoBERTforExtractiveSummarization
 
 def train(device, epoch, model, optimizer, train_loader, save_step, save_ckpt_path, train_step = 0):
     losses = []
@@ -60,10 +60,10 @@ if __name__ == '__main__':
     learning_rate = 5e-5  # Learning Rate
 
     # WellnessTextClassificationDataset 데이터 로더
-    dataset = WellnessTextClassificationDataset()
+    dataset = ExtractiveDataset()
     train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    model = KoBERTforSequenceClassfication()
+    model = KoBERTforExtractiveSummarization()
     model.to(device)
 
     # Prepare optimizer and schedule (linear warmup and decay)

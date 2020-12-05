@@ -81,7 +81,7 @@ class KoBERTforExtractiveSummarization(BertPreTrainedModel):
       'loss':loss,
       'logits':logits
     }
-    return return_data# (loss), logits, (hidden_states), (attentions)
+    return return_data # (loss), logits, (hidden_states), (attentions)
 
 class KoBERTforSequenceClassfication(BertPreTrainedModel):
   def __init__(self,
