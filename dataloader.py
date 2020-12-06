@@ -40,7 +40,7 @@ class AbstrativeDataset(Dataset):
 
       index_of_words += pad_token_id * pad_token_len
 
-      self.data.append(index_of_words)
+      self.data.append(torch.tensor(index_of_words))
 
   def __len__(self):
     return len(self.data)
