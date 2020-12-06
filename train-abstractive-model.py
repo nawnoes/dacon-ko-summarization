@@ -64,6 +64,7 @@ if __name__ == '__main__':
                 pbar.set_postfix_str(f"Loss: {loss.item():.3f} ({np.mean(losses):.3f})")
 
         total_losses.append(np.mean(losses))
+
     # data
     data = {
         "loss": total_losses
