@@ -22,10 +22,11 @@ if __name__ == '__main__':
     save_step = 100 # 학습 저장 주기
     learning_rate = 5e-5  # Learning Rate
 
-    dataset= AbstrativeDataset()
+    dataset= AbstrativeDataset(device=device)
     train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     model = AbstractiveKoGPT2()
+    model.to(device)
 
     loss_fct = torch.nn.CrossEntropyLoss(ignore_index=3)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)

@@ -8,6 +8,7 @@ from kobert_transformers import get_tokenizer
 
 class AbstrativeDataset(Dataset):
   def __init__(self,
+               device,
                n_ctx = 1024,
                articles_max_length = 810,
                summary_max_length = 210,
@@ -40,7 +41,7 @@ class AbstrativeDataset(Dataset):
 
       index_of_words += pad_token_id * pad_token_len
 
-      self.data.append(torch.tensor(index_of_words))
+      self.data.append(torch.tensor(index_of_words).to(device))
 
   def __len__(self):
     return len(self.data)
