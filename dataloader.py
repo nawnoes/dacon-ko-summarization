@@ -8,30 +8,39 @@ from kobert_transformers import get_tokenizer
 
 class AbstrativeDataset(Dataset):
   def __init__(self,
-               n_ctx = 1024
+               n_ctx = 1024,
+               articles_max_length = 810,
+               summary_max_length = 210,
                ):
     self.data =[]
     self.tokenizer = get_kogpt2_tokenizer()
 
-    bos_token_id = [self.tokenizer.bos_token_id]
-    eos_token_id = [self.tokenizer.eos_token_id]
-    pad_token_id = [self.tokenizer.pad_token_id]
+    bos_token_id = [self.tokenizer.bos_token_id] # <s>
+    eos_token_id = [self.tokenizer.eos_token_id] # </s>
+    pad_token_id = [self.tokenizer.pad_token_id] # <pad>
 
-    file = open(self.file_path, 'r', encoding='utf-8')
+    jsonl_datas = jsonl_load()
+    # for dict_data in jsonl_datas:
+    for dict_data in tqdm(jsonl_datas):
+      articles = dict_data['article_original']
+      abstractive_summary = dict_data['abstractive']
 
-    while True:
-      line = file.readline()
-      if not line:
-        break
-      datas = line.split("    ")
-      index_of_words = bos_token_id +self.tokenizer.encode(datas[0]) + eos_token_id + bos_token_id + self.tokenizer.encode(datas[1][:-1])+ eos_token_id
+      tmp_str =''
+      for article in articles:
+        tmp_str += article
+
+      # encode
+      # truncate, if string exceed max length
+      enc_tmp_str = self.tokenizer.encode(tmp_str, truncation= True, max_length=articles_max_length)
+      enc_abstractive_summary = self.tokenizer.encode(abstractive_summary, truncation= True, max_length=summary_max_length)
+
+      # <s> 요약할 문장 </s> 요약된 문장 </s>
+      index_of_words = bos_token_id + enc_tmp_str+ eos_token_id + enc_abstractive_summary + eos_token_id
       pad_token_len = n_ctx - len(index_of_words)
 
       index_of_words += pad_token_id * pad_token_len
 
       self.data.append(index_of_words)
-
-    file.close()
 
   def __len__(self):
     return len(self.data)
@@ -127,7 +136,7 @@ class ExtractiveDataset(Dataset):
     return item
 
 if __name__ == "__main__":
-  # dataset = AbstrativeDataset()
-  dataset2 = ExtractiveDataset()
-  # print(dataset)
-  print(dataset2)
+  dataset = AbstrativeDataset()
+  # dataset2 = ExtractiveDataset()
+  print(dataset)
+  # print(dataset2)

@@ -17,7 +17,7 @@ jsonl 파일은 Json Line 형식의 파일로, 한줄에 json 객체 하나로 �
     + 최대 토큰 길이
         * kobert tokenizer max length: 1250
         * kogpt tokenizer max length: 1029  
-- abstractive : 사람이 생성한 요약문
+- abstractive : 사람이 생성한 요약문. 최대 토큰 길이 213. koGPT2 기준
 - extractive : 사람이 추출한 요약문 3개의 index
 #### 테스트 데이터
 ###### abstractive_test_v2.jsonl

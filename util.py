@@ -7,7 +7,7 @@ import json
 from kogpt2_transformers import get_kogpt2_tokenizer
 from kobert_transformers import get_tokenizer
 
-def jsonl_load(data_path = 'data/train.jsonl'):
+def jsonl_load(data_path = './data/train.jsonl'):
   data = []
   with open(data_path, 'r') as json_file:
       json_list = list(json_file)
@@ -17,7 +17,7 @@ def jsonl_load(data_path = 'data/train.jsonl'):
 
   return data
 
-def test(data_path = 'data/train.jsonl'):
+def test(data_path = './data/train.jsonl'):
   data = []
   with open(data_path, 'r') as json_file:
       json_list = list(json_file)
@@ -32,7 +32,7 @@ def test(data_path = 'data/train.jsonl'):
   print('average article_original len - ', sum_len/count)
   return data
 
-def token_num(data_path = 'data/train.jsonl'):
+def token_num(data_path = './data/train.jsonl'):
   data = []
   with open(data_path, 'r') as json_file:
       json_list = list(json_file)
