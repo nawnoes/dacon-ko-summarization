@@ -50,7 +50,7 @@ def train(epoch, model, optimizer, train_loader, save_step, save_ckpt_path, trai
 
 
 if __name__ == '__main__':
-    checkpoint_path ="../checkpoint"
+    checkpoint_path ="./checkpoint"
     save_ckpt_path = f"{checkpoint_path}/kobert-extractive.pth"
 
     n_epoch = 5          # Num of Epoch

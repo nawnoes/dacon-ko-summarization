@@ -1,0 +1,5 @@
+kobert-transformers==0.4.1
+kogpt2-transformers==0.3.0
+tqdm==4.46.1
+transformers==3.0.2
+torch==1.6.0
