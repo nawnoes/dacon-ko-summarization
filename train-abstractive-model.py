@@ -32,6 +32,18 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     total_losses = []
     losses =[]
+
+    if os.path.isfile(save_ckpt_path):
+        checkpoint = torch.load(save_ckpt_path, map_location=device)
+        pre_epoch = checkpoint['epoch']
+        pre_loss = checkpoint['loss']
+        total_losses = checkpoint['losses']
+
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+        print(f"load pretrain from: {save_ckpt_path}, epoch={pre_epoch}, loss={pre_loss}")
+
     for epoch in range(n_epoch):
         count = 0
         with tqdm(total=len(train_loader), desc=f"Train({epoch})") as pbar:
