@@ -8,7 +8,7 @@ from tqdm import tqdm
 import torch
 from transformers import AdamW
 from torch.utils.data import dataloader
-from dataloader import ExtractiveDataset
+from dataset import ExtractiveDataset
 from model.kobert import KoBERTforExtractiveSummarization
 
 def train(epoch, model, optimizer, train_loader, save_step, save_ckpt_path, train_step = 0):
@@ -25,7 +25,6 @@ def train(epoch, model, optimizer, train_loader, save_step, save_ckpt_path, trai
             outputs = model(**data)
 
             loss = outputs['loss']
-
             losses.append(loss.item())
 
             loss.backward()
@@ -60,7 +59,7 @@ if __name__ == '__main__':
     learning_rate = 5e-5  # Learning Rate
 
     # WellnessTextClassificationDataset 데이터 로더
-    dataset = ExtractiveDataset(device=device)
+    dataset = ExtractiveDataset(data_path='./data/train_test.jsonl', device=device)
     train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     model = KoBERTforExtractiveSummarization()
@@ -78,19 +77,19 @@ if __name__ == '__main__':
     pre_epoch, pre_loss, train_step = 0, 0, 0
     losses = []
 
-    if os.path.isfile(save_ckpt_path):
-        checkpoint = torch.load(save_ckpt_path, map_location=device)
-        pre_epoch = checkpoint['epoch']
-        pre_loss = checkpoint['loss']
-        losses = checkpoint['losses']
-        train_step =  checkpoint['train_step']
-        total_train_step =  checkpoint['total_train_step']
-
-        model.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-
-        print(f"load pretrain from: {save_ckpt_path}, epoch={pre_epoch}, loss={pre_loss}")
-        # best_epoch += 1
+    # if os.path.isfile(save_ckpt_path):
+    #     checkpoint = torch.load(save_ckpt_path, map_location=device)
+    #     pre_epoch = checkpoint['epoch']
+    #     pre_loss = checkpoint['loss']
+    #     losses = checkpoint['losses']
+    #     train_step =  checkpoint['train_step']
+    #     total_train_step =  checkpoint['total_train_step']
+    #
+    #     model.load_state_dict(checkpoint['model_state_dict'])
+    #     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    #
+    #     print(f"load pretrain from: {save_ckpt_path}, epoch={pre_epoch}, loss={pre_loss}")
+    #     # best_epoch += 1
 
     offset = pre_epoch
     for step in range(n_epoch):

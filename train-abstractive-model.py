@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 import torch
 from torch.utils.data import dataloader
-from dataloader import AbstrativeDataset
+from dataset import AbstrativeDataset
 from model.kogpt2 import AbstractiveKoGPT2
 
 if __name__ == '__main__':

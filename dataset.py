@@ -52,6 +52,7 @@ class AbstrativeDataset(Dataset):
 
 class ExtractiveDataset(Dataset):
   def __init__(self,
+               data_path= './data/train.jsonl',
                num_label = 2, # 추출할것과 추출하지 않을 것들로
                device = 'cpu',
                max_seq_len = 512, # KoBERT max_length
@@ -64,7 +65,7 @@ class ExtractiveDataset(Dataset):
     sep_token_id = self.tokenizer.sep_token_id # [SEP]
     pad_token_id = self.tokenizer.pad_token_id # [PAD]
 
-    jsonl_datas = jsonl_load()
+    jsonl_datas = jsonl_load(data_path=data_path)
     # for dict_data in jsonl_datas:
     for dict_data in tqdm(jsonl_datas):
       articles = dict_data['article_original']
