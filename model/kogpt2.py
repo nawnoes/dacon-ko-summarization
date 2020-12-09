@@ -27,6 +27,8 @@ class AbstractiveKoGPT2(nn.Module):
                no_repeat_ngram_size= no_repeat_ngram_size,
                num_return_sequences=num_return_sequences,
                early_stopping = early_stopping,
+               eos_token_id = 1,
+               pad_token_id= 3
               )
 
   def forward(self, input, labels = None):

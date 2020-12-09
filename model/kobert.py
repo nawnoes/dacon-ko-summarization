@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import math
 from torch.nn import CrossEntropyLoss, MSELoss
 from transformers import BertPreTrainedModel
 from kobert_transformers import get_kobert_model
@@ -35,7 +36,8 @@ class KoBERTforExtractiveSummarization(BertPreTrainedModel):
     self.num_labels = num_labels
     self.kobert = get_kobert_model()
     self.dropout = nn.Dropout(hidden_dropout_prob)
-    self.classifier = nn.Linear(hidden_size, num_labels)
+    self.ffn = nn.Linear(hidden_size, 4*hidden_size)
+    self.classifier = nn.Linear(4*hidden_size, num_labels)
 
     self.init_weights()
 
@@ -61,11 +63,12 @@ class KoBERTforExtractiveSummarization(BertPreTrainedModel):
     sequence_output = outputs[0]
 
     sequence_output = self.dropout(sequence_output)
+    sequence_output = self.ffn(sequence_output)
     logits = self.classifier(sequence_output)
 
     loss = None
     if labels is not None:
-      loss_fct = CrossEntropyLoss(reduction='sum') # reduction mean makes loss small
+      loss_fct = CrossEntropyLoss()#reduction='sum') # reduction mean makes loss small
       # Only keep active parts of the loss
       if attention_mask is not None:
         active_loss = attention_mask.view(-1) == 1
@@ -94,7 +97,8 @@ class KoBERTforSequenceClassfication(BertPreTrainedModel):
     self.num_labels = num_labels
     self.kobert = get_kobert_model()
     self.dropout = nn.Dropout(hidden_dropout_prob)
-    self.classifier = nn.Linear(hidden_size, num_labels)
+    self.ffn = nn.Linear(hidden_size, 4*hidden_size)
+    self.classifier = nn.Linear(4*hidden_size, num_labels)
 
     self.init_weights()
 
@@ -120,7 +124,8 @@ class KoBERTforSequenceClassfication(BertPreTrainedModel):
     pooled_output = outputs[1]
 
     pooled_output = self.dropout(pooled_output)
-    logits = self.classifier(pooled_output)
+    ffn_output = self.ffn(pooled_output)
+    logits = self.classifier(ffn_output)
 
     outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
 

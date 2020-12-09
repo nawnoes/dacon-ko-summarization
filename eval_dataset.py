@@ -38,7 +38,7 @@ class AbstrativeDataset(Dataset):
 
       self.data.append({
         'id':id,
-        'input':torch.tensor(index_of_words).to(device)
+        'input':torch.tensor([index_of_words]).to(device)
       })
 
   def __len__(self):
