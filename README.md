@@ -20,18 +20,17 @@ jsonl 파일은 Json Line 형식의 파일로, 한줄에 json 객체 하나로 �
 - abstractive : 사람이 생성한 요약문. 최대 토큰 길이 213. koGPT2 기준
 - extractive : 사람이 추출한 요약문 3개의 index
 #### 테스트 데이터
-###### abstractive_test_v2.jsonl
-###### extractive_test_v2.jsonl
+`abstractive_test_v2.jsonl`,`extractive_test_v2.jsonl`
 
 #### 제출 데이터
-xxxx_test_v2.json의 추론결과를 csv 파일로 출
+xxxx_test_v2.json의 추론결과를 csv 파일로 제출
 
 ## 생성요약 (Abstrative)
-
+원문을 바탕으로 요약문을 생성하는 요약방법
 - KoGPT2의 max_len = 1024
 
 ### 데이터
-원문과 요약문을 1024 토큰에 맞춰서 자르고, 학
+원문과 요약문을 1024 토큰에 맞춰서 자르고, 학습
 ```
 <s> 원문 </s> 요약문 </s>
 ```
@@ -76,11 +75,11 @@ class AbstractiveKoGPT2(nn.Module):
     return outputs
 ```
 
-## 결과 예시
-![]('./images/abstractive_summary_ex.png)
+## 결과
+![](./images/abstractive_summary_ex.png)
 
 ## 추출요약 (Extrative)
-
+원문에서 요약할 문장을 추출하여 요약하는 방법.
 - KoBERT의 max_len = 512
 
 ### 데이터
@@ -159,3 +158,5 @@ class KoBERTforExtractiveSummarization(BertPreTrainedModel):
     }
     return return_data # (loss), logits, (hidden_states), (attentions)
 ```
+## 결과
+![](./images/extractive_summary_ex.png)
